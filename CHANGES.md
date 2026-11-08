@@ -2,6 +2,19 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.5.0 · 2026-11-08
+
+M5, agent-first for real.
+- **M5 · Agent-first, for real: retries, errors, scope and evals:**
+  - an `Idempotency-Key` on checkout, through all three ways in, and tested at the same instant;
+  - one message for anything unexpected, through every way in, with the traceback kept for you in `make logs`;
+  - `in_stock` on each cart line;
+  - the customer's agent, in a folder of its own, with only the customer tools, and tested against a full agent;
+  - five shopping evals, run headless, with your tool descriptions vague, wrong and rewritten.
+- **`checks/retry_test.py` and `checks/evals.py`:** the retry test, and the evals.
+- **The contract's M5 section,** and a line on unexpected errors in its rules for errors.
+- **The M3 checks** accept the field M5 adds to a cart line, `in_stock`. Their titles and results are the same.
+
 ## 0.4.1 · 2026-11-08
 
 - **M4-6** points to your tutor harness's rule for compacting a session: §5a of `~/tutor/orchestrator/ORCHESTRATOR.md`, new in its 1.0.3. Nothing else changed.

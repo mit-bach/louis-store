@@ -33,6 +33,12 @@ NO_TOKEN = "No session token. Start a session, then send its token with every ca
 BAD_TOKEN = "That session token doesn't exist. Start a new session."
 EXPIRED = "That session has expired. Start a new session."
 
+UNEXPECTED = "Something went wrong in the store. Try again in a moment."
+
+# Who each tool is for. A customer's agent gets the first list, and is denied the second.
+CUSTOMER_TOOLS = ["list_products", "get_product", "start_session", "get_cart", "set_cart_item", "remove_cart_item", "checkout"]
+ADMIN_TOOLS = ["create_product", "archive_product", "update_product", "adjust_stock"]
+
 
 def not_for_sale(product_id: int) -> str:
     return f"Product {product_id} isn't for sale."

@@ -28,6 +28,7 @@ def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, i
     import m2  # noqa: F401
     import m3  # noqa: F401
     import m4  # noqa: F401
+    import m5  # noqa: F401
 
     chosen = [
         c for c in CHECKS

@@ -155,6 +155,8 @@ def get_cart_op(ctx):
         {"product_id": a, "sku": "CHECK-CART-A", "name": "Cart A", "price_cents": 1000, "quantity": 2, "line_total_cents": 2000, "available": True},
         {"product_id": b, "sku": "CHECK-CART-B", "name": "Cart B", "price_cents": 1000, "quantity": 3, "line_total_cents": 3000, "available": False},
     ], "total_cents": 2000}
+    for line in out["cart"]["items"]:
+        line.pop("in_stock", None)  # M5 adds it; this check is about M3's fields
     if out["cart"] != want:
         raise Fail(short(json.dumps(want), 500), short(json.dumps(out["cart"]), 500),
                    "Lines sorted by product id; an archived product's line has available: false and isn't in the total.")

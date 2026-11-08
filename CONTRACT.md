@@ -37,6 +37,8 @@ What the caller receives:
 
 The messages are written for whoever reads them next, which is often a model deciding what to do. So each one says what was wrong, with the value that was wrong in it.
 
+From M5, anything unexpected gives every caller one fixed message, and never a traceback: see "M5 · Unexpected errors".
+
 ---
 
 ## M0 · Health
@@ -336,3 +338,61 @@ A price that changed since a product went in the cart doesn't stop a checkout. T
 
 - **`checks/race_test.py`:** each round, two sessions each put the last unit of a product in their cart and check out at the same instant. Every round must end with one `201`, one `409` and a stock of 0: never two orders, never a `500`, never a negative stock. `uv run checks/race_test.py --rounds 20` prints `20/20 rounds: one 201, one 409, stock 0`.
 - **`checks/deadlock_test.py`:** each round, two sessions hold the same two products, put in their carts in opposite orders, and check out at the same instant. Both must get an order. The checks run it for 500 rounds.
+
+---
+
+## M5 · Agent-first, for real
+
+### Retries: the Idempotency-Key
+
+- **The column,** in `backend/migrations/007_add_idempotency_key.sql`: `orders.idempotency_key`, `TEXT`, and empty (`NULL`) when a checkout had no key. A `UNIQUE` constraint on `(session_token, idempotency_key)`, so a session can't have two orders with one key. Empty keys are never equal to each other, so a session can have any number of orders without one.
+- **`checkout(token, idempotency_key=None)`,** in `backend/orders.py`, checks the session, then, in its one transaction:
+  1. its locking read, as in M4;
+  2. if a key was given, and this session already has an order with it: it returns that order, as it was placed, and changes nothing;
+  3. otherwise, everything as in M4, and the new order records the key.
+- **A key belongs to its session.** Another session using the same key gets its own order.
+- **Only an order records its key.** A refused checkout changes nothing, so its key is still free for the next try.
+- **A key is any text the caller chooses:** a new one for each purchase it means to make, and the same one every time it retries that purchase.
+
+| Operation | HTTP | Command | Tool |
+|---|---|---|---|
+| `checkout` with a key | `POST /checkout` with the header `Idempotency-Key: KEY` | `./store checkout --session TOKEN --idempotency-key KEY` | `checkout` with `idempotency_key` |
+
+- **A repeat answers exactly as the first did:** `201` and the same order, exit 0 and the same JSON, or the same tool result.
+- **The tool's description** tells an agent to make up a key for each purchase, and to reuse it when it isn't sure a checkout went through.
+- **`checks/retry_test.py`:** each round, a new session puts 1 of a product with 2 in stock in its cart, then checks out twice with one key: one after the other in odd rounds, at the same instant in even rounds. Both answers must be the same order, and the stock must end at 1. `--via http`, `cli` or `tools`. The checks run 20 rounds through HTTP, 6 through `./store` and 10 through the tools.
+
+### Unexpected errors
+
+Anything an operation raises that no way in maps to a kind above (a bug, a database that's down) reaches every caller as this message, and nothing else:
+
+`Something went wrong in the store. Try again in a moment.`
+
+- **HTTP:** `500` and `{"detail": "Something went wrong in the store. Try again in a moment."}`.
+- **The command line:** exit 1, and that line alone on stderr.
+- **Tools:** an error whose text contains it.
+
+Never a traceback, a file path or a line of SQL. The traceback goes to the API's log, which `make logs` shows.
+
+### The cart says what's in stock
+
+`CartLine` gains `in_stock`: `true` when the line's quantity is in stock right now (`quantity <= stock`). `available` still means only that the product hasn't been archived, and `total_cents` still counts the available lines. Checkout checks the stock again, under its lock: `in_stock` is a hint for whoever reads the cart, not a promise.
+
+### The customer's agent
+
+A folder in your repository, `agents/customer/`, holds the agent a customer would use:
+- **`CLAUDE.md`:** its brief, in your words.
+- **`.mcp.json`:** one server, `store`: `{"type": "http", "url": "http://localhost:8000/mcp"}`.
+- **`.claude/settings.json`:**
+  - `permissions.allow`: each customer tool by its full name: `mcp__store__list_products`, `mcp__store__get_product`, `mcp__store__start_session`, `mcp__store__get_cart`, `mcp__store__set_cart_item`, `mcp__store__remove_cart_item` and `mcp__store__checkout`;
+  - `permissions.deny`: `Bash`, `WebFetch`, `WebSearch`, and each admin tool: `mcp__store__create_product`, `mcp__store__archive_product`, `mcp__store__update_product` and `mcp__store__adjust_stock`;
+  - `enabledMcpjsonServers`: `["store"]`;
+  - `claudeMdExcludes`: a pattern that matches the `CLAUDE.md` at the top of your repository, and not the agent's own.
+
+Every tool the store has is in `allow` or in `deny`.
+
+### Evals
+
+- **`checks/evals.py`** runs five shopping tasks, each as one headless session of your customer agent, and checks each in the database. `--model` (default `haiku`), `--tasks` and `--runs` change what it runs.
+- **Each run** adds a line to `checks/evals-runs.txt`, which you commit. The line holds the score, the model, a fingerprint of your tool descriptions, and what Claude Code says the run cost.
+

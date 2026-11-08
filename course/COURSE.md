@@ -41,7 +41,7 @@ The store kit, at `~/code/store`, from [`mit-bach/louis-store`](https://github.c
 
 ## 5. Plan
 
-The kit's milestones, about 11 working days in all:
+The kit's milestones, about 12 working days in all:
 - **M0** · Setup, and an agent that follows your rules: 3 steps.
 - **M1** · Products, and the store's first tools: 7 steps.
 - **M2** · The admin side, and your first race: 7 steps. Step 7 has him add a deny rule to this course's settings through Tutor Orch: a harness change, with a prediction and a `RULES-LOG.md` entry.
@@ -50,10 +50,13 @@ The kit's milestones, about 11 working days in all:
   - Step 4 has him race two buyers for the last unit, then remove his lock, and then his `ORDER BY`, to see what each was doing.
   - Step 6 is his first audit of this harness. He reads `orchestrator/RULES-LOG.md`, his sessions in Berth and two transcripts through `orchestrator/tools/tx.py`, and writes half a page on which changes held. If the rules log has no entry of his own yet, the audit ends in one, made through Tutor Orch with a prediction and a log entry.
   - Then he asks Tutor Orch to compact his store tutor through Berth, for the first time (`orchestrator/ORCHESTRATOR.md` §5a, "Compacting any session").
-- **M5** · Agent-first, for real: scope, retries and evals.
+- **M5** · Agent-first, for real: retries, errors, scope and evals: 6 steps.
+  - Step 4 has him build the customer's agent in `agents/customer/`: a brief, its own tool server, and permissions that allow only the customer tools and deny the shell, the web and the admin tools. `tx.py` (louis-tutor 1.0.4 or newer) shows which rules files it loads.
+  - Step 5 tests it: the same request to it and to a full agent, M4-5's race with two customer agents, and `checkout` behind a click.
+  - Step 6 runs `checks/evals.py`: five shopping tasks, headless, each checked in the database, with his tool descriptions as he wrote them, vague, wrong, and rewritten. His scores, and what each run cost, go in `JOURNAL.md`.
 - **M6** · The frontend, built by his agent.
 
-M0 to M4 are in the kit now. The rest arrive in order, each tested before it does.
+M0 to M5 are in the kit now. The rest arrive in order, each tested before it does.
 
 ## 6. Course files
 
