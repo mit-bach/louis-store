@@ -42,6 +42,7 @@ make reset
 
 ```
 applying backend/migrations/001_create_products.sql
+migrations up to date
 applying backend/seed.sql
 done
 ```

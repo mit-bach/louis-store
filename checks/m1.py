@@ -4,28 +4,14 @@ import ast
 import json
 from datetime import datetime
 
-from kitlib import ROOT, Fail, check, short
+from contract import duplicate, not_found, parity
+from kitlib import ROOT, Fail, check, http_json, short
 
 # What CONTRACT.md fixes for products.
 FIELDS = {"id", "sku", "name", "description", "category", "image_url", "price_cents", "stock", "created_at", "updated_at"}
 CREATE_FIELDS = {"sku", "name", "description", "category", "image_url", "price_cents", "stock"}
 MISSING_ID = 999999
 
-
-def not_found(product_id: int) -> str:
-    return f"No product with id {product_id}."
-
-
-def duplicate(sku: str) -> str:
-    return f"A product with the SKU {sku} already exists."
-
-
-# Every HTTP operation, and its command and tool (CONTRACT.md, "The three ways in").
-OPERATIONS = {
-    ("GET", "/products"): ("products list", "list_products"),
-    ("GET", "/products/{product_id}"): ("products get", "get_product"),
-    ("POST", "/products"): ("products create", "create_product"),
-}
 
 FORBIDDEN_IMPORTS = {"fastapi", "starlette", "typer", "click", "mcp", "httpx", "uvicorn"}
 
@@ -37,15 +23,6 @@ def expect_refused(ctx, sql: str, fragment: str, what: str) -> None:
                    "Which rule in your CREATE TABLE should refuse it? Rules in the table hold for every caller.")
     if fragment not in r.stderr:
         raise Fail(f"an error containing '{fragment}'", short(r.stderr))
-
-
-def http_json(ctx, method: str, path: str, **kw):
-    r = ctx.http(method, path, **kw)
-    try:
-        body = r.json()
-    except ValueError:
-        body = r.text
-    return r.status_code, body
 
 
 def first_id(ctx) -> int:
@@ -229,7 +206,7 @@ def model_fields(ctx):
     out = read_probe(ctx)
     if set(out["create_fields"]) != CREATE_FIELDS:
         raise Fail("ProductCreate: " + ", ".join(sorted(CREATE_FIELDS)), "ProductCreate: " + ", ".join(out["create_fields"]))
-    if set(out["fields"]) != FIELDS:
+    if not FIELDS <= set(out["fields"]):
         raise Fail("Product: " + ", ".join(sorted(FIELDS)), "Product: " + ", ".join(out["fields"]))
 
 
@@ -370,7 +347,7 @@ def http_list(ctx):
     if [p.get("id") for p in body] != ids:
         raise Fail(f"ids {ids}", f"ids {[p.get('id') for p in body]}")
     keys = set(body[0])
-    if keys != FIELDS:
+    if not FIELDS <= keys:
         raise Fail("each product with: " + ", ".join(sorted(FIELDS)), "keys: " + ", ".join(sorted(keys)))
     if not has_zone(body[0]["created_at"]):
         raise Fail("created_at with a time zone, like 2026-11-08T10:00:00.123456Z", body[0]["created_at"])
@@ -409,7 +386,7 @@ def http_create(ctx):
         raise Fail("201 and the new product", f"{status} {short(json.dumps(body), 300)}")
     want = {**sent, "description": None, "image_url": None, "stock": 0}
     got = {k: body.get(k) for k in want}
-    if got != want or set(body) != FIELDS or not has_zone(body.get("created_at")):
+    if got != want or not FIELDS <= set(body) or not has_zone(body.get("created_at")):
         raise Fail(json.dumps(want) + " plus id, created_at, updated_at", short(json.dumps(body), 400))
 
 
@@ -603,23 +580,5 @@ def tools_create(ctx):
 
 
 @check(1, 7, "parity: every HTTP operation has its command and its tool, and nothing is left out", needs=("your tools answer",))
-def parity(ctx):
-    status, spec = http_json(ctx, "GET", "/openapi.json")
-    routes = {(m.upper(), p) for p, ops in spec.get("paths", {}).items() for m in ops if p != "/health"}
-
-    async def calls(client):
-        return {t.name for t in (await client.list_tools()).tools}
-
-    tools = ctx.tools(calls)
-    problems = []
-    for route in sorted(routes - set(OPERATIONS)):
-        problems.append(f"{route[0]} {route[1]} isn't in CONTRACT.md")
-    for route, (command, tool) in OPERATIONS.items():
-        if route not in routes:
-            problems.append(f"no route {route[0]} {route[1]}")
-        if ctx.cli(*command.split(), "--help").returncode != 0:
-            problems.append(f"no command ./store {command}")
-        if tool not in tools:
-            problems.append(f"no tool {tool}")
-    if problems:
-        raise Fail("each operation reachable three ways: HTTP, ./store and a tool", "; ".join(problems))
+def parity_m1(ctx):
+    parity(ctx, 1)

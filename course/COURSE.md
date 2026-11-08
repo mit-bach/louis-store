@@ -44,13 +44,13 @@ The store kit, at `~/code/store`, from [`mit-bach/louis-store`](https://github.c
 The kit's milestones, about 10 working days in all:
 - **M0** · Setup, and an agent that follows your rules: 3 steps.
 - **M1** · Products, and the store's first tools: 7 steps.
-- **M2** · The admin side, and your first race.
+- **M2** · The admin side, and your first race: 7 steps. Step 7 has him add a deny rule to this course's settings through Tutor Orch: a harness change, with a prediction and a `RULES-LOG.md` entry.
 - **M3** · Visitors and carts.
 - **M4** · Checkout, and two buyers at once.
 - **M5** · Agent-first, for real: scope, retries and evals.
 - **M6** · The frontend, built by his agent.
 
-M0 and M1 are in the kit now. The rest arrive in order, each tested before it does.
+M0 to M2 are in the kit now. The rest arrive in order, each tested before it does.
 
 ## 6. Course files
 

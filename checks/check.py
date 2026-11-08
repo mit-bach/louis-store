@@ -25,6 +25,7 @@ from kitlib import CHECKS, LAST_RUN, MILESTONES, Ctx, Fail, git, short  # noqa: 
 def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, int, int, list[str]]:
     import m0  # noqa: F401  (registers the checks)
     import m1  # noqa: F401
+    import m2  # noqa: F401
 
     chosen = [
         c for c in CHECKS
@@ -71,7 +72,7 @@ def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, i
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the store's checks.")
-    parser.add_argument("milestone", help="the milestone number, 0 to 1 for now, or 'all'")
+    parser.add_argument("milestone", help="the milestone number, or 'all'")
     parser.add_argument("step", nargs="?", type=int, help="stop after this step of the milestone")
     parser.add_argument("--keep", action="store_true", help="leave the throwaway store running afterwards")
     a = parser.parse_args()

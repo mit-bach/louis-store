@@ -15,7 +15,7 @@ import httpx
 
 ROOT = Path(__file__).resolve().parent.parent
 LAST_RUN = ROOT / "checks" / "last-run.txt"
-MILESTONES = {0: "Setup", 1: "Products, and the store's first tools"}
+MILESTONES = {0: "Setup", 1: "Products, and the store's first tools", 2: "The admin side, and your first race"}
 
 
 class Fail(Exception):
@@ -161,3 +161,12 @@ def git(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
 
 
+
+
+def http_json(ctx, method: str, path: str, **kw):
+    r = ctx.http(method, path, **kw)
+    try:
+        body = r.json()
+    except ValueError:
+        body = r.text
+    return r.status_code, body

@@ -2,6 +2,16 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.2.0 · 2026-11-08
+
+M2, and what it needed from the kit.
+- **M2 · The admin side, and your first race:** a second migration (archive, not delete), archiving, editing and stock changes through all three ways in, the stock race and its control, your agent as an admin, and the wall on both of your harnesses: a hook in this repository, and a deny rule in your tutor's course.
+- **`make migrate`** applies only the migrations your database hasn't had, and records each one in a table called `schema_migrations`. `make reset` now ends with it.
+- **`checks/stock_race.py`:** the stock race, through HTTP, `./store` or your tools.
+- **The contract's M2 section.**
+- **The M1 checks** now accept the field M2 adds to a product, `archived_at`. Their titles and results are the same.
+- **The M0 and M1 guides** show `make reset`'s new output, which now includes `migrations up to date`, from a fresh run. Nothing else in them changed.
+
 ## 0.1.0 · 2026-11-08
 
 The first milestones.

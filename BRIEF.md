@@ -32,13 +32,13 @@ Agents are good at terminals, so the command line is as much a way in for them a
 Each milestone is a folder of step files in [`milestones/`](milestones/README.md), one build step each, and each step ends with a check you run yourself.
 - **M0 · Setup, and an agent that follows your rules** (half a day). Ready now.
 - **M1 · Products, and the store's first tools** (about two days). Ready now.
-- **M2 · The admin side, and your first race** (1 day).
+- **M2 · The admin side, and your first race** (about two days). Ready now.
 - **M3 · Visitors and carts** (1.5 days).
 - **M4 · Checkout, and two buyers at once** (1.5 days).
 - **M5 · Agent-first, for real: scope, retries and evals** (1.5 days).
 - **M6 · The frontend, built by your agent** (1 day).
 
-M2 to M6 arrive in this repository as they're finished and tested. You get them with `make update`.
+M3 to M6 arrive in this repository as they're finished and tested. You get them with `make update`.
 
 ## What "finished" means
 

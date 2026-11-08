@@ -3,13 +3,14 @@
 
 PSQL = docker compose exec -T db psql -X -q -v ON_ERROR_STOP=1 -U store -d store
 
-.PHONY: help up down logs psql reset check check-all update
+.PHONY: help up down logs psql migrate reset check check-all update
 
 help:
 	@echo "make up                  start your store (API and database), rebuilding the API if needed"
 	@echo "make down                stop it; your data stays"
 	@echo "make logs                follow the API's log (Ctrl-C to stop following)"
 	@echo "make psql                open a SQL prompt in your database (\\q to leave)"
+	@echo "make migrate             apply the migrations your database hasn't had yet"
 	@echo "make reset               empty your database, then apply every migration and the seed"
 	@echo "make check M=1 [STEP=3]  run the checks for a milestone, on a throwaway copy of your store"
 	@echo "make check-all           run every milestone's checks"
@@ -27,13 +28,20 @@ logs:
 psql:
 	docker compose exec db psql -U store -d store
 
-reset:
-	@$(PSQL) -c "SET client_min_messages = warning; DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+migrate:
+	@$(PSQL) -c "SET client_min_messages = warning; CREATE TABLE IF NOT EXISTS schema_migrations (filename TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now());"
 	@for f in backend/migrations/*.sql; do \
 		[ -e "$$f" ] || continue; \
+		name=$$(basename "$$f"); \
+		if [ -n "$$($(PSQL) -At -c "SELECT 1 FROM schema_migrations WHERE filename = '$$name'")" ]; then continue; fi; \
 		echo "applying $$f"; \
-		$(PSQL) -1 < "$$f" || exit 1; \
+		{ cat "$$f"; echo; echo "INSERT INTO schema_migrations (filename) VALUES ('$$name');"; } | $(PSQL) -1 || exit 1; \
 	done
+	@echo "migrations up to date"
+
+reset:
+	@$(PSQL) -c "SET client_min_messages = warning; DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+	@$(MAKE) --no-print-directory migrate
 	@if [ -f backend/seed.sql ]; then echo "applying backend/seed.sql"; $(PSQL) -1 < backend/seed.sql; fi
 	@echo "done"
 

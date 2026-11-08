@@ -159,3 +159,67 @@ An MCP server called `store`, served by your API at `http://localhost:8000/mcp` 
 ### Parity
 
 Every route in your API's `/openapi.json`, apart from `/health`, is listed in "The three ways in" above, and has its command and its tool. A route that isn't in this contract fails the check, so nothing an agent might need is left reachable only one way.
+
+---
+
+## M2 · The admin side
+
+### What changes for a product
+
+- **A new field, `archived_at`:** a date and time with its time zone, or null. It's null for a product on sale, and set to the moment the product was archived. Every way in returns it with the product.
+- **The table** gets the column through a second migration, `backend/migrations/002_add_archived_at.sql`. It's a `TIMESTAMPTZ` that may be `NULL`, with no default.
+- **Archived products stay in the table.** Orders will point at them from M4 on.
+- **Listing leaves archived products out,** unless the caller asks for them:
+  - `list_products(include_archived: bool = False)`;
+  - `GET /products?include_archived=true`;
+  - `./store products list --include-archived`;
+  - the tool `list_products`, with `include_archived: true`.
+- **Getting one product by its id works whether it's archived or not.**
+
+### The new data shapes, in `backend/schemas.py`
+
+- **`ProductUpdate`:** what a caller sends to change a product. Its fields are `sku`, `name`, `description`, `category`, `image_url` and `price_cents`, each optional, with the same rules as in `ProductCreate`.
+  - A field left out stays as it is.
+  - `null` is refused for every field, with invalid input (422, exit 2).
+  - Any other field is refused too, with invalid input. That includes `stock`, `id` and `archived_at`: a field that's ignored in silence would let a caller believe it changed something.
+- **`StockChange`:** the body of a stock change, `{"change": <integer>}`. A positive change adds units, and a negative one removes them.
+
+### The new operations, in `backend/products.py`
+
+- **`archive_product(product_id: int)`** sets `archived_at` and `updated_at` to now, and returns the product. Archiving a product that's already archived changes nothing, and returns it as it is. A missing id raises `ProductNotFound`.
+- **`update_product(product_id: int, changes: ProductUpdate)`** changes only the fields given, sets `updated_at` to now, and returns the product. With no fields given, it returns the product unchanged. It raises `ProductNotFound` and `DuplicateSku` as in M1.
+- **`adjust_stock(product_id: int, change: int)`** adds `change` to the stock in a single SQL statement, sets `updated_at` to now, and returns the product. It raises `ProductNotFound`, or `InsufficientStock` (conflict) when the stock would go below zero. Then nothing changes.
+
+The new error's message, with the values filled in: **`InsufficientStock`:** `Only 2 of Two-Person Tent in stock, so 5 can't be removed.`
+
+### The three ways in
+
+| Operation | HTTP | Command | Tool |
+|---|---|---|---|
+| `archive_product` | `POST /products/{product_id}/archive` | `./store products archive PRODUCT_ID` | `archive_product` |
+| `update_product` | `PATCH /products/{product_id}` | `./store products update PRODUCT_ID …` | `update_product` |
+| `adjust_stock` | `POST /products/{product_id}/stock` | `./store products adjust-stock PRODUCT_ID --change N` | `adjust_stock` |
+
+**HTTP:**
+- **`POST /products/{product_id}/archive`:** `200` and the product; `404` for a missing id.
+- **`PATCH /products/{product_id}`,** with a `ProductUpdate` as its body: `200` and the product; `404`; `409` for a SKU that's taken; `422` for invalid input.
+- **`POST /products/{product_id}/stock`,** with a `StockChange` as its body: `200` and the product; `404`; `409` and the `InsufficientStock` message; `422` when `change` isn't a whole number.
+
+**The command line:**
+- **`./store products archive PRODUCT_ID`**
+- **`./store products update PRODUCT_ID [--sku TEXT] [--name TEXT] [--description TEXT] [--category TEXT] [--image-url TEXT] [--price-cents INTEGER]`.** Only the options given change. Exit codes: 2 for invalid input, 3 for a missing id, 4 for a SKU that's taken.
+- **`./store products adjust-stock PRODUCT_ID --change N`.** Exit codes: 3 for a missing id, 4 for too little stock.
+
+**The tools:**
+- **`archive_product`** takes `product_id`.
+- **`update_product`** takes `product_id`, and `changes`, an object shaped like `ProductUpdate`.
+- **`adjust_stock`** takes `product_id` and `change`.
+
+Each one is an error, whose text contains the message, in the same cases as the command line.
+
+### The stock race
+
+Changing stock must be safe when many callers do it at the same moment. `checks/stock_race.py` sends 50 changes of +1 and 50 of −1 to one product, all at once, through any of the three ways in. Then:
+- every change is answered with success;
+- the stock ends exactly where it started;
+- removing more than is in stock is refused with the `InsufficientStock` message, and the stock is still where it started.
