@@ -14,7 +14,20 @@ OPERATIONS = {
     ("GET", "/cart"): ("cart show", "get_cart", 3),
     ("PUT", "/cart/items/{product_id}"): ("cart set", "set_cart_item", 3),
     ("DELETE", "/cart/items/{product_id}"): ("cart remove", "remove_cart_item", 3),
+    ("POST", "/checkout"): ("checkout", "checkout", 4),
 }
+
+EMPTY_CART = "Your cart is empty."
+
+
+def short_line(stock: int, name: str) -> str:
+    return f"Only {stock} of {name} left in stock."
+
+
+def not_for_sale_any_more(lines: list[tuple[str, int]]) -> str:
+    names = ", ".join(f"{name} (product {pid})" for name, pid in lines)
+    them = "it" if len(lines) == 1 else "them"
+    return f"Not for sale any more: {names}. Remove {them} from your cart, then check out again."
 
 NO_TOKEN = "No session token. Start a session, then send its token with every cart request."
 BAD_TOKEN = "That session token doesn't exist. Start a new session."

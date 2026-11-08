@@ -292,3 +292,47 @@ A visitor doesn't sign in. They start a **session**, and get its **token**: a ra
 - **`remove_cart_item`** takes `product_id` and `session_token`.
 
 Each one is an error, whose text contains the message, in the same cases as the command line.
+
+---
+
+## M4 · Checkout
+
+### Orders
+
+- **The table `orders`,** in `backend/migrations/005_create_orders.sql`: `id`, a number the database gives it; `session_token`, the session that placed it, as `TEXT` that's never `NULL`; `total_cents`; and `created_at`, a `TIMESTAMPTZ`. Deleting a session never deletes or blocks its orders.
+- **The table `order_lines`,** in `backend/migrations/006_create_order_lines.sql`: `order_id`, which must be an order's `id`; `product_id`, which must be a product's `id`; `quantity`, above zero; and `price_cents`, the price the product had when it was bought, which never changes afterwards. There's one line per order and product.
+- **Its shapes, in `backend/schemas.py`:**
+  - **`OrderLine`:** `product_id`, `sku`, `name`, `quantity`, `price_cents` (the price paid), and `line_total_cents`.
+  - **`Order`:** `id`, `items` (a list of `OrderLine`, sorted by `product_id`), `total_cents`, and `created_at`.
+
+### Checkout, in `backend/orders.py`
+
+`checkout(token)` checks the session, then, in **one transaction**:
+1. reads the cart's lines with their products, **locking those product rows, in `id` order**;
+2. checks every line;
+3. writes the order and its lines, at the prices it just read;
+4. lowers each product's stock by the line's quantity;
+5. empties the cart.
+
+It returns the `Order`. `total_cents` is the sum of `price_cents × quantity` over the lines: it always comes from the database, never from the caller. If any check fails, it raises, and **nothing changes**: no order, the same stock, the same cart.
+
+The errors, in the order they're checked, with their messages:
+- **`NoSession`** (no valid session), as in M3.
+- **`EmptyCart`** (conflict): `Your cart is empty.`
+- **`NotForSale`** (conflict), when one or more lines' products have been archived. It names each one, in product id order: `Not for sale any more: Bottle 1 L (product 10). Remove it from your cart, then check out again.` With more than one: `Not for sale any more: Bottle 1 L (product 10), Tarp 3 x 3 m (product 3). Remove them from your cart, then check out again.`
+- **`InsufficientStock`** (conflict), when one or more lines want more than is in stock. It has one sentence per short line, in product id order, joined by a space: `Only 1 of Solo Tent left in stock. Only 0 of Head Torch left in stock.`
+
+A price that changed since a product went in the cart doesn't stop a checkout. The order records the price paid.
+
+| Operation | HTTP | Command | Tool |
+|---|---|---|---|
+| `checkout` | `POST /checkout` | `./store checkout` | `checkout` |
+
+- **HTTP:** `POST /checkout`, with the session's Bearer header. No body: anything sent is ignored. `201` and the `Order`; `401`; `409` with one of the messages above.
+- **The command line:** `./store checkout --session TOKEN`. Exit codes: 4 for the three conflicts, 5 for no valid session.
+- **The tool:** `checkout`, taking `session_token`. Each refusal is an error whose text contains the message.
+
+### Two buyers at once
+
+- **`checks/race_test.py`:** each round, two sessions each put the last unit of a product in their cart and check out at the same instant. Every round must end with one `201`, one `409` and a stock of 0: never two orders, never a `500`, never a negative stock. `uv run checks/race_test.py --rounds 20` prints `20/20 rounds: one 201, one 409, stock 0`.
+- **`checks/deadlock_test.py`:** each round, two sessions hold the same two products, put in their carts in opposite orders, and check out at the same instant. Both must get an order. The checks run it for 500 rounds.

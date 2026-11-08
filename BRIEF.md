@@ -34,11 +34,11 @@ Each milestone is a folder of step files in [`milestones/`](milestones/README.md
 - **M1 · Products, and the store's first tools** (about two days). Ready now.
 - **M2 · The admin side, and your first race** (about two days). Ready now.
 - **M3 · Visitors and carts** (about two days). Ready now.
-- **M4 · Checkout, and two buyers at once** (1.5 days).
+- **M4 · Checkout, and two buyers at once** (about two days). Ready now.
 - **M5 · Agent-first, for real: scope, retries and evals** (1.5 days).
 - **M6 · The frontend, built by your agent** (1 day).
 
-M4 to M6 arrive in this repository as they're finished and tested. You get them with `make update`.
+M5 and M6 arrive in this repository as they're finished and tested. You get them with `make update`.
 
 ## What "finished" means
 
@@ -54,4 +54,4 @@ M4 to M6 arrive in this repository as they're finished and tested. You get them 
 
 - A Mac, with Claude Code running inside cmux. Your setup prompt installed both.
 - Docker Desktop, uv and the GitHub CLI (`gh`). M0's first step installs each one.
-- About 10 working days.
+- About 11 working days.

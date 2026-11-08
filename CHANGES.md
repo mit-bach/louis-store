@@ -2,6 +2,19 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.4.0 · 2026-11-08
+
+M4, checkout and two buyers at once.
+- **M4 · Checkout, and two buyers at once:**
+  - orders that outlive their sessions, and keep the price paid;
+  - checkout as one transaction that locks its products in id order, and changes nothing when it refuses;
+  - checkout through all three ways in;
+  - the race for the last unit and the deadlock test, each with its control;
+  - two agents buying the last unit at once;
+  - your first audit of your tutor harness, and your first compaction through Berth.
+- **`checks/race_test.py` and `checks/deadlock_test.py`:** the checkout race and the deadlock test.
+- **The contract's M4 section.**
+
 ## 0.3.0 · 2026-11-08
 
 M3, visitors and carts.
