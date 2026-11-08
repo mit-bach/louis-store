@@ -51,7 +51,7 @@ A long session gets compacted: Claude Code replaces the old conversation with a 
 
 **Predict:** after compaction, will your store tutor still know which step you're on, and what you decided along the way?
 
-Ask Tutor Orch to compact your store tutor through Berth, with a note that gives:
+Ask Tutor Orch to compact your store tutor through Berth. Its rule for this is §5a, "Compacting any session", in `~/tutor/orchestrator/ORCHESTRATOR.md`: read it first. The note it writes gives:
 - **TASK:** keep teaching course 01 from where we are now;
 - **SEAT:** the Store Tutor, working in `~/tutor/courses/01-online-store`;
 - **SOURCES:** the course's `COURSE.md`, and `~/code/store/JOURNAL.md` and `PREDICTIONS.md`.

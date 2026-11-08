@@ -2,6 +2,10 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.4.1 · 2026-11-08
+
+- **M4-6** points to your tutor harness's rule for compacting a session: §5a of `~/tutor/orchestrator/ORCHESTRATOR.md`, new in its 1.0.3. Nothing else changed.
+
 ## 0.4.0 · 2026-11-08
 
 M4, checkout and two buyers at once.

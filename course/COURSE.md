@@ -49,7 +49,7 @@ The kit's milestones, about 11 working days in all:
 - **M4** · Checkout, and two buyers at once: 6 steps.
   - Step 4 has him race two buyers for the last unit, then remove his lock, and then his `ORDER BY`, to see what each was doing.
   - Step 6 is his first audit of this harness. He reads `orchestrator/RULES-LOG.md`, his sessions in Berth and two transcripts through `orchestrator/tools/tx.py`, and writes half a page on which changes held. If the rules log has no entry of his own yet, the audit ends in one, made through Tutor Orch with a prediction and a log entry.
-  - Then he asks Tutor Orch to compact his store tutor through Berth, for the first time (`orchestrator/ORCHESTRATOR.md`, "To compact a fork").
+  - Then he asks Tutor Orch to compact his store tutor through Berth, for the first time (`orchestrator/ORCHESTRATOR.md` §5a, "Compacting any session").
 - **M5** · Agent-first, for real: scope, retries and evals.
 - **M6** · The frontend, built by his agent.
 
