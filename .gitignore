@@ -1,0 +1,13 @@
+# Your settings, with your password. Never committed.
+.env
+
+# Python's caches
+__pycache__/
+*.pyc
+.venv/
+
+# The checks' last result, which your tutor reads on your Mac
+checks/last-run.txt
+
+# macOS
+.DS_Store
