@@ -10,7 +10,23 @@ OPERATIONS = {
     ("POST", "/products/{product_id}/archive"): ("products archive", "archive_product", 2),
     ("PATCH", "/products/{product_id}"): ("products update", "update_product", 2),
     ("POST", "/products/{product_id}/stock"): ("products adjust-stock", "adjust_stock", 2),
+    ("POST", "/sessions"): ("session start", "start_session", 3),
+    ("GET", "/cart"): ("cart show", "get_cart", 3),
+    ("PUT", "/cart/items/{product_id}"): ("cart set", "set_cart_item", 3),
+    ("DELETE", "/cart/items/{product_id}"): ("cart remove", "remove_cart_item", 3),
 }
+
+NO_TOKEN = "No session token. Start a session, then send its token with every cart request."
+BAD_TOKEN = "That session token doesn't exist. Start a new session."
+EXPIRED = "That session has expired. Start a new session."
+
+
+def not_for_sale(product_id: int) -> str:
+    return f"Product {product_id} isn't for sale."
+
+
+def cart_too_many(stock: int, name: str, quantity: int) -> str:
+    return f"Only {stock} of {name} in stock, so a cart can't hold {quantity}."
 
 
 def not_found(product_id: int) -> str:

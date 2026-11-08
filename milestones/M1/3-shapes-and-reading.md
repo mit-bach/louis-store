@@ -121,7 +121,7 @@ EOF
 
 ```
 10 products, ids [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-sku='TENT-2P' name='Two-Person Tent' description='Freestanding, 2.1 kg, two doors.' category='shelter' image_url=None price_cents=24900 stock=5 id=1 created_at=datetime.datetime(2026, 11, 8, 17, 43, 22, 919493, tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')) updated_at=datetime.datetime(2026, 11, 8, 17, 43, 22, 919493, tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC'))
+sku='TENT-2P' name='Two-Person Tent' description='Freestanding, 2.1 kg, two doors.' category='shelter' image_url=None price_cents=24900 stock=5 id=1 created_at=datetime.datetime(2026, 11, 8, 18, 18, 24, 101144, tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')) updated_at=datetime.datetime(2026, 11, 8, 18, 18, 24, 101144, tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC'))
 ```
 
 The script ends with `pool.close()`. Without it, Python prints a long, alarming but harmless message as it exits, starting `Exception ignored while calling deallocator` and ending `cannot join thread at interpreter shutdown`: the pool's background threads were still running.

@@ -154,7 +154,7 @@ make check M=0 STEP=1
 **The first time,** uv downloads the checks' libraries, which takes a few seconds. **You should see:**
 
 ```
-Store checks · M0 up to step 1 · 2026-11-08 12:42 EST
+Store checks · M0 up to step 1 · 2026-11-08 13:17 EST
 
 M0 · Setup
   PASS  M0-1  Docker is running

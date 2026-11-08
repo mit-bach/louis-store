@@ -208,8 +208,8 @@ make up
 `make up` runs `docker compose up -d --build --wait`: build the image, start both containers in the background (`-d`), and wait until both are healthy. **The first time,** Docker downloads Python and Postgres and installs the libraries, which can take a few minutes. **You should see** many lines of build output, ending like this:
 
 ```
- Container store-api-1 Waiting
  Container store-db-1 Waiting
+ Container store-api-1 Waiting
  Container store-db-1 Healthy
  Container store-api-1 Healthy
 ```
@@ -225,7 +225,7 @@ docker compose ps --format 'table {{.Name}}\t{{.Service}}\t{{.Status}}'
 ```
 NAME          SERVICE   STATUS
 store-api-1   api       Up 2 seconds (healthy)
-store-db-1    db        Up 5 seconds (healthy)
+store-db-1    db        Up 7 seconds (healthy)
 ```
 
 Then ask your API how it is:
@@ -263,7 +263,7 @@ curl -s -w '\nstatus %{http_code}, after %{time_total} seconds\n' http://localho
 
 ```
 {"status":"error","database":"unreachable"}
-status 503, after 2.004523 seconds
+status 503, after 2.005070 seconds
 ```
 
 The API didn't crash, and didn't hang: it waited for its 2-second timeout, then reported the problem with a `503`. Now bring the database back. `make up` starts whatever isn't running, and waits until everything is healthy:
@@ -284,7 +284,7 @@ make check M=0 STEP=2
 **You should see** (your times will differ):
 
 ```
-Store checks · M0 up to step 2 · 2026-11-08 12:42 EST
+Store checks · M0 up to step 2 · 2026-11-08 13:17 EST
 
 M0 · Setup
   PASS  M0-1  Docker is running

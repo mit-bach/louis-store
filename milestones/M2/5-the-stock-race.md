@@ -20,7 +20,6 @@ uv run checks/stock_race.py
 ```
 
 ```
-Installed 31 packages in 30ms
 The stock race, through http, on product 1 (Two-Person Tent, green). Its stock is 5.
   Sending 50 changes of +1 and 50 of -1, all at once …
   100 of 100 answered success, in 0.2 seconds.
@@ -41,7 +40,7 @@ uv run checks/stock_race.py --via tools
 **You should see** `PASS` at the end of each. Mine, through the command line, ended like this:
 
 ```
-  100 of 100 answered success, in 9.2 seconds.
+  100 of 100 answered success, in 8.3 seconds.
   The stock is now 5. It should be 5.
   Removing 505, which is more than the 5 in stock …
   Answer: 4 Only 5 of Two-Person Tent, green in stock, so 505 can't be removed.
@@ -72,11 +71,11 @@ uv run checks/stock_race.py
 ```
 The stock race, through http, on product 1 (Two-Person Tent, green). Its stock is 5.
   Sending 50 changes of +1 and 50 of -1, all at once …
-  100 of 100 answered success, in 0.3 seconds.
-  The stock is now 6. It should be 5.
+  100 of 100 answered success, in 0.6 seconds.
+  The stock is now 7. It should be 5.
   Removing 505, which is more than the 5 in stock …
-  Answer: 409 Only 6 of Two-Person Tent, green in stock, so 505 can't be removed.
-  The stock is now 6. It should still be 5.
+  Answer: 409 Only 7 of Two-Person Tent, green in stock, so 505 can't be removed.
+  The stock is now 7. It should still be 5.
   FAIL
 ```
 

@@ -1,6 +1,6 @@
 # The reviewer
 
-Louis gives this file to a fresh agent session at the end of each milestone, saying which milestone: "Follow reviewer/REVIEWER.md for M1." In M3 he turns it into a skill of his own.
+Louis gives this file to a fresh agent session at the end of each milestone, saying which milestone: "Follow reviewer/REVIEWER.md for M1." In M3 he turns it into a skill in his tutor harness.
 
 ---
 
@@ -13,7 +13,7 @@ Louis gives this file to a fresh agent session at the end of each milestone, say
 3. The files listed under "Yours" in that README. Those are what you review. Read each one whole.
 4. `checks/last-run.txt`, if it exists: the checks' last result, and the commit it ran on.
 
-You may run read-only commands: `git log`, `git diff`, `git show`, `cat`, and the store's own read commands (`./store products list`, `curl` on a `GET` route). Don't run `make check`, `make reset` or anything that writes to his database.
+You may read any file, and run read-only git commands: `git log`, `git diff` and `git show`, with `git -C ~/code/store` if you're in another folder. Don't run the store itself, `make`, or anything else: the checks have already run, and their result is in `checks/last-run.txt`.
 
 ## What to look for
 

@@ -95,7 +95,7 @@ make check M=2
 **You should see:**
 
 ```
-Store checks · M2 · 2026-11-08 12:48 EST
+Store checks · M2 · 2026-11-08 13:24 EST
 
 M0 · Setup
   PASS  M0-1  Docker is running
@@ -105,7 +105,7 @@ M0 · Setup
   PASS  M0-2  git ignores .env, so the password never reaches GitHub
   PASS  M0-2  the compose project is called store
   … starting a throwaway copy of your store (project store-check, port 8001)
-  … ready in 6s
+  … ready in 8s
   PASS  M0-2  a fresh copy of your store starts, and GET /health answers ok
   PASS  M0-3  AGENTS.md is written, in your own words
   PASS  M0-3  CLAUDE.md imports AGENTS.md

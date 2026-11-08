@@ -145,7 +145,7 @@ My table answered:
 
 ```
 ERROR:  new row for relation "products" violates check constraint "products_price_cents_check"
-DETAIL:  Failing row contains (1, BAD-1, Bad, null, test, null, -100, 0, 2026-11-08 17:43:14.171011+00, 2026-11-08 17:43:14.171011+00).
+DETAIL:  Failing row contains (1, BAD-1, Bad, null, test, null, -100, 0, 2026-11-08 18:18:14.901537+00, 2026-11-08 18:18:14.901537+00).
 ```
 
 Nothing was added. `products_price_cents_check` is the name Postgres gave a `CHECK` rule. Write what yours did under your prediction.

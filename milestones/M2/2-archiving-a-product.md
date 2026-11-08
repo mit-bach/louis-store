@@ -80,7 +80,7 @@ curl -s -w '\n%{http_code}\n' -X POST http://localhost:8000/products/9/archive
 ```
 
 ```
-{"sku":"FILTER-SQ","name":"Squeeze Water Filter","description":"Filters 0.1 micron.","category":"water","image_url":null,"price_cents":3200,"stock":0,"id":9,"created_at":"2026-11-08T17:44:55.621612Z","updated_at":"2026-11-08T17:45:26.688342Z","archived_at":"2026-11-08T17:45:26.688342Z"}
+{"sku":"FILTER-SQ","name":"Squeeze Water Filter","description":"Filters 0.1 micron.","category":"water","image_url":null,"price_cents":3200,"stock":0,"id":9,"created_at":"2026-11-08T18:20:08.767230Z","updated_at":"2026-11-08T18:20:37.443632Z","archived_at":"2026-11-08T18:20:37.443632Z"}
 200
 ```
 
@@ -89,7 +89,7 @@ curl -s -w '\n%{http_code}\n' -X POST http://localhost:8000/products/9/archive
 <details><summary>What mine answered the second time</summary>
 
 ```
-{"sku":"FILTER-SQ","name":"Squeeze Water Filter","description":"Filters 0.1 micron.","category":"water","image_url":null,"price_cents":3200,"stock":0,"id":9,"created_at":"2026-11-08T17:44:55.621612Z","updated_at":"2026-11-08T17:45:26.688342Z","archived_at":"2026-11-08T17:45:26.688342Z"}
+{"sku":"FILTER-SQ","name":"Squeeze Water Filter","description":"Filters 0.1 micron.","category":"water","image_url":null,"price_cents":3200,"stock":0,"id":9,"created_at":"2026-11-08T18:20:08.767230Z","updated_at":"2026-11-08T18:20:37.443632Z","archived_at":"2026-11-08T18:20:37.443632Z"}
 200
 ```
 

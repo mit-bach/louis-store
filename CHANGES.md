@@ -2,6 +2,13 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.3.0 · 2026-11-08
+
+M3, visitors and carts.
+- **M3 · Visitors and carts:** sessions with a token that expires, the cart with a join and an upsert, the three refusals for a missing, made-up or expired token through every way in, two customers shopped for by one agent, and your reviewer as a skill in your tutor harness.
+- **A new exit code, 5,** for no valid session, and the contract's M3 section: how HTTP, the command line and the tools each carry a session.
+- **`reviewer/REVIEWER.md`** now only reads files and git, so a tutor can use it without running anything in your store.
+
 ## 0.2.0 · 2026-11-08
 
 M2, and what it needed from the kit.

@@ -15,7 +15,7 @@ import httpx
 
 ROOT = Path(__file__).resolve().parent.parent
 LAST_RUN = ROOT / "checks" / "last-run.txt"
-MILESTONES = {0: "Setup", 1: "Products, and the store's first tools", 2: "The admin side, and your first race"}
+MILESTONES = {0: "Setup", 1: "Products, and the store's first tools", 2: "The admin side, and your first race", 3: "Visitors and carts"}
 
 
 class Fail(Exception):

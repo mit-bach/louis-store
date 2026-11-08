@@ -36,7 +36,7 @@ The store kit, at `~/code/store`, from [`mit-bach/louis-store`](https://github.c
 - **Records are named by step:** `lessons/M1-3.md` holds your bridge, your review of his step, and your three questions; `prompts/RESPONSE-M1-3.md` holds what he says in chat, verbatim.
 - **Your three questions** for each step are about what he understood from what he built, not what he typed. He answers them in `JOURNAL.md`, under the step's heading. **The next step opens once that section holds his answers,** and the step's check has passed in `checks/last-run.txt`.
 - **Predictions:** each line in `PREDICTIONS.md` is tagged `[code]`, `[agent]` or `[harness]`. Mark each a hit or a miss, and keep the tally per thread in `MASTERY.md`.
-- **At the end of each milestone,** he runs `reviewer/REVIEWER.md` in a fresh session and records each finding in his journal. Check that each one is fixed or answered.
+- **At the end of each milestone,** he gets a review: from `reviewer/REVIEWER.md` in a fresh session until M3, then from the `store-reviewer` skill. He records each finding in his journal. Check that each one is fixed or answered.
 - **A problem in a guide or a check** (a wrong expected output, a step that doesn't work) isn't yours to fix, and isn't his fault. He sends Dominik the step, the command and its output. Updates reach him with `make update`, which merges the kit's new commits into his repository.
 
 ## 5. Plan
@@ -45,12 +45,12 @@ The kit's milestones, about 10 working days in all:
 - **M0** · Setup, and an agent that follows your rules: 3 steps.
 - **M1** · Products, and the store's first tools: 7 steps.
 - **M2** · The admin side, and your first race: 7 steps. Step 7 has him add a deny rule to this course's settings through Tutor Orch: a harness change, with a prediction and a `RULES-LOG.md` entry.
-- **M3** · Visitors and carts.
+- **M3** · Visitors and carts: 5 steps. Step 5 has him make the reviewer a skill in this harness (`~/tutor/.claude/skills/store-reviewer/`) through Tutor Orch, and test its description: a vague one, then a precise one. From then on, the end-of-milestone review is that skill.
 - **M4** · Checkout, and two buyers at once.
 - **M5** · Agent-first, for real: scope, retries and evals.
 - **M6** · The frontend, built by his agent.
 
-M0 to M2 are in the kit now. The rest arrive in order, each tested before it does.
+M0 to M3 are in the kit now. The rest arrive in order, each tested before it does.
 
 ## 6. Course files
 

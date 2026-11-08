@@ -27,6 +27,7 @@ Every error an operation can raise has a kind. The kind decides what each way in
 | invalid input | 422 | 2 |
 | not found | 404 | 3 |
 | conflict with what's stored | 409 | 4 |
+| no valid session (from M3) | 401 | 5 |
 | anything unexpected | 500 | 1 |
 
 What the caller receives:
@@ -223,3 +224,71 @@ Changing stock must be safe when many callers do it at the same moment. `checks/
 - every change is answered with success;
 - the stock ends exactly where it started;
 - removing more than is in stock is refused with the `InsufficientStock` message, and the stock is still where it started.
+
+---
+
+## M3 · Visitors and carts
+
+### Sessions
+
+A visitor doesn't sign in. They start a **session**, and get its **token**: a random string that works for an hour. Whoever holds the token can use that session's cart, so a token is a secret, the way a key is.
+
+- **The table `sessions`,** in `backend/migrations/003_create_sessions.sql`, has `token`, a `TEXT` primary key; `created_at`; and `expires_at`, a `TIMESTAMPTZ` that's never `NULL`, an hour after the session started.
+- **`Session`,** in `backend/schemas.py`, is what starting a session returns: `token` and `expires_at`.
+- **`backend/sessions.py`** has the operations, and imports nothing from a way in:
+  - **`start_session()`** makes a token with `secrets.token_urlsafe(32)`, stores it, and returns the `Session`.
+  - **`require_session(token: str | None)`** returns the token when it belongs to a session that hasn't expired. Otherwise it raises `NoSession` (no valid session), with one of three messages:
+    - no token: `No session token. Start a session, then send its token with every cart request.`
+    - a token that isn't in the table: `That session token doesn't exist. Start a new session.`
+    - a token whose `expires_at` has passed: `That session has expired. Start a new session.`
+
+**How each way in carries the token:**
+- **HTTP:** the header `Authorization: Bearer <token>`. A missing or malformed header counts as no token. A `401` also carries the header `WWW-Authenticate: Bearer`.
+- **The command line:** the option `--session TOKEN` on every cart command. Leaving it out counts as no token, and exits `5`.
+- **The tools:** the argument `session_token` on every cart tool. Leaving it out counts as no token, and the tool's error carries the message.
+
+### The cart
+
+- **The table `cart_items`,** in `backend/migrations/004_create_cart_items.sql`, holds one line per session and product:
+  - `session_token`, which must be a session's token, and whose lines are deleted with their session;
+  - `product_id`, which must be a product's `id`;
+  - `quantity`, above zero;
+  - a primary key on `(session_token, product_id)`.
+- **Its shapes, in `backend/schemas.py`:**
+  - **`CartLine`:** `product_id`, `sku`, `name`, `price_cents`, `quantity`, `line_total_cents` (`price_cents × quantity`), and `available`, which is `false` when the product has been archived since it went in the cart.
+  - **`Cart`:** `items`, a list of `CartLine` sorted by `product_id`, and `total_cents`, the sum of the available lines' totals.
+  - **`CartQuantity`:** the body for setting a line, `{"quantity": <integer, 1 or more>}`.
+- **`backend/cart.py`** has the operations. Each one checks the session first, with `require_session`:
+  - **`get_cart(token)`** returns the session's `Cart`.
+  - **`set_cart_item(token, product_id, quantity)`** makes the cart hold exactly `quantity` of the product. It adds a line, or replaces the quantity of the line that's there, then returns the `Cart`. It raises:
+    - `ProductNotFound` for a missing product: `No product with id 42.`;
+    - `ProductNotFound` for an archived one: `Product 9 isn't for sale.`;
+    - `InsufficientStock` when `quantity` is more than is in stock: `Only 3 of Solo Tent in stock, so a cart can't hold 5.`
+  - **`remove_cart_item(token, product_id)`** removes the line and returns the `Cart`. Removing a line that isn't there changes nothing.
+
+| Operation | HTTP | Command | Tool |
+|---|---|---|---|
+| `start_session` | `POST /sessions` | `./store session start` | `start_session` |
+| `get_cart` | `GET /cart` | `./store cart show` | `get_cart` |
+| `set_cart_item` | `PUT /cart/items/{product_id}` | `./store cart set PRODUCT_ID QUANTITY` | `set_cart_item` |
+| `remove_cart_item` | `DELETE /cart/items/{product_id}` | `./store cart remove PRODUCT_ID` | `remove_cart_item` |
+
+**HTTP:**
+- **`POST /sessions`:** `201` and the `Session`.
+- **`GET /cart`:** `200` and the `Cart`; `401` with one of the three messages.
+- **`PUT /cart/items/{product_id}`,** with a `CartQuantity` body: `200` and the `Cart`; `401`; `404` (missing or archived); `409` (not enough stock); `422` (a quantity below 1).
+- **`DELETE /cart/items/{product_id}`:** `200` and the `Cart`; `401`.
+
+**The command line:**
+- `./store session start`;
+- `./store cart show --session TOKEN`;
+- `./store cart set PRODUCT_ID QUANTITY --session TOKEN`, with exit codes 2 (a quantity below 1), 3 (missing or archived), 4 (not enough stock) and 5 (no valid session);
+- `./store cart remove PRODUCT_ID --session TOKEN`, with exit code 5 (no valid session).
+
+**The tools:**
+- **`start_session`** takes no arguments.
+- **`get_cart`** takes `session_token`.
+- **`set_cart_item`** takes `product_id`, `quantity` (1 or more, which the tool's schema says), and `session_token`.
+- **`remove_cart_item`** takes `product_id` and `session_token`.
+
+Each one is an error, whose text contains the message, in the same cases as the command line.

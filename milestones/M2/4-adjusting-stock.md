@@ -108,7 +108,7 @@ curl -s -w '\n%{http_code}\n' -X POST http://localhost:8000/products/2/stock -H 
 ```
 
 ```
-{"sku":"TENT-1P","name":"Solo Tent","description":"Single-wall, 1.1 kg.","category":"shelter","image_url":null,"price_cents":18900,"stock":8,"id":2,"created_at":"2026-11-08T17:44:55.621612Z","updated_at":"2026-11-08T17:46:26.173472Z","archived_at":null}
+{"sku":"TENT-1P","name":"Solo Tent","description":"Single-wall, 1.1 kg.","category":"shelter","image_url":null,"price_cents":18900,"stock":8,"id":2,"created_at":"2026-11-08T18:20:08.767230Z","updated_at":"2026-11-08T18:21:41.961260Z","archived_at":null}
 200
 ```
 

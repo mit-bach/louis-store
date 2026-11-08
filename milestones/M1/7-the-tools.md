@@ -220,7 +220,7 @@ make check M=1
 **You should see:**
 
 ```
-Store checks · M1 · 2026-11-08 12:44 EST
+Store checks · M1 · 2026-11-08 13:19 EST
 
 M0 · Setup
   PASS  M0-1  Docker is running

@@ -138,7 +138,7 @@ curl -s -w '\n%{http_code}\n' -X PATCH http://localhost:8000/products/1 -H 'Cont
 ```
 
 ```
-{"sku":"TENT-2P","name":"Two-Person Tent","description":"Freestanding, 2.1 kg, two doors.","category":"shelter","image_url":null,"price_cents":22900,"stock":5,"id":1,"created_at":"2026-11-08T17:44:55.621612Z","updated_at":"2026-11-08T17:45:58.150533Z","archived_at":null}
+{"sku":"TENT-2P","name":"Two-Person Tent","description":"Freestanding, 2.1 kg, two doors.","category":"shelter","image_url":null,"price_cents":22900,"stock":5,"id":1,"created_at":"2026-11-08T18:20:08.767230Z","updated_at":"2026-11-08T18:21:04.582763Z","archived_at":null}
 200
 ```
 
@@ -179,7 +179,7 @@ From the command line, the four lines that matter:
   "name": "Two-Person Tent, green",
   "price_cents": 22900,
   "stock": 5,
-  "updated_at": "2026-11-08T17:45:59.456546Z",
+  "updated_at": "2026-11-08T18:21:05.028873Z",
 ```
 
 ```

@@ -73,7 +73,7 @@ curl -s http://localhost:8000/products/1
 **You should see** your product 1, as JSON. Mine:
 
 ```
-{"sku":"TENT-2P","name":"Two-Person Tent","description":"Freestanding, 2.1 kg, two doors.","category":"shelter","image_url":null,"price_cents":24900,"stock":5,"id":1,"created_at":"2026-11-08T17:43:57.649283Z","updated_at":"2026-11-08T17:43:57.649283Z"}
+{"sku":"TENT-2P","name":"Two-Person Tent","description":"Freestanding, 2.1 kg, two doors.","category":"shelter","image_url":null,"price_cents":24900,"stock":5,"id":1,"created_at":"2026-11-08T18:19:02.820283Z","updated_at":"2026-11-08T18:19:02.820283Z"}
 ```
 
 A product that isn't there. `-w '\n%{http_code}\n'` makes curl print the status code on its own line after the body:
@@ -98,7 +98,7 @@ curl -s -w '\n%{http_code}\n' -X POST http://localhost:8000/products -H 'Content
 **You should see** the new product with its id, its defaults, and `201`:
 
 ```
-{"sku":"TEST-MUG","name":"Enamel mug","description":null,"category":"cooking","image_url":null,"price_cents":1200,"stock":0,"id":11,"created_at":"2026-11-08T17:43:57.715754Z","updated_at":"2026-11-08T17:43:57.715754Z"}
+{"sku":"TEST-MUG","name":"Enamel mug","description":null,"category":"cooking","image_url":null,"price_cents":1200,"stock":0,"id":11,"created_at":"2026-11-08T18:19:03.006867Z","updated_at":"2026-11-08T18:19:03.006867Z"}
 201
 ```
 
