@@ -41,7 +41,7 @@ The store kit, at `~/code/store`, from [`mit-bach/louis-store`](https://github.c
 
 ## 5. Plan
 
-The kit's milestones, about 12 working days in all:
+The kit's milestones, about 13 working days in all:
 - **M0** · Setup, and an agent that follows your rules: 3 steps.
 - **M1** · Products, and the store's first tools: 7 steps.
 - **M2** · The admin side, and your first race: 7 steps. Step 7 has him add a deny rule to this course's settings through Tutor Orch: a harness change, with a prediction and a `RULES-LOG.md` entry.
@@ -54,9 +54,12 @@ The kit's milestones, about 12 working days in all:
   - Step 4 has him build the customer's agent in `agents/customer/`: a brief, its own tool server, and permissions that allow only the customer tools and deny the shell, the web and the admin tools. `tx.py` (louis-tutor 1.0.4 or newer) shows which rules files it loads.
   - Step 5 tests it: the same request to it and to a full agent, M4-5's race with two customer agents, and `checkout` behind a click.
   - Step 6 runs `checks/evals.py`: five shopping tasks, headless, each checked in the database, with his tool descriptions as he wrote them, vague, wrong, and rewritten. His scores, and what each run cost, go in `JOURNAL.md`.
-- **M6** · The frontend, built by his agent.
+- **M6** · The frontend, built by his agent: 5 steps.
+  - Step 2 is his spec, `FRONTEND-SPEC.md`, written by him, not by an agent.
+  - Step 3 is the first time his coding agent writes code for him: on a branch, in plan mode, with a plan he checks against his spec before he approves it. His `AGENTS.md` gains a section on what it builds.
+  - Step 4 is the walkthrough by hand, and one change he makes to the agent's code himself. Step 5 is the same request with no spec, judged on the same walkthrough.
 
-M0 to M5 are in the kit now. The rest arrive in order, each tested before it does.
+All six milestones are in the kit now.
 
 ## 6. Course files
 

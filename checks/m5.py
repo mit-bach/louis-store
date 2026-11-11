@@ -237,7 +237,12 @@ def customer_files(ctx):
 def customer_permissions(ctx):
     p = settings(ctx).get("permissions", {})
     allow, deny = set(p.get("allow", [])), set(p.get("deny", []))
-    missing = [f"allow mcp__store__{t}" for t in CUSTOMER_TOOLS if f"mcp__store__{t}" not in allow]
+
+    async def calls(client):
+        return {t.name for t in (await client.list_tools()).tools}
+
+    exists = ctx.tools(calls)
+    missing = [f"allow mcp__store__{t}" for t in CUSTOMER_TOOLS if t in exists and f"mcp__store__{t}" not in allow]
     missing += [f"deny {rule}" for rule in ["Bash", "WebFetch", "WebSearch"] + [f"mcp__store__{t}" for t in ADMIN_TOOLS]
                 if rule not in deny]
     too_much = sorted(rule for rule in allow if rule in ("mcp__store", "mcp__store__*", "Bash") or

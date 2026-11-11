@@ -2,6 +2,19 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.6.0 · 2026-11-11
+
+M6, the frontend: the last milestone.
+- **M6 · The frontend, built by your agent:**
+  - your orders, through all three ways in;
+  - CORS for your own frontend, and nobody else's;
+  - your spec, after deciding where the token lives;
+  - the build, from a plan you read and approve first, on a branch;
+  - the walkthrough by hand;
+  - the same request with no spec, as the control.
+- **The contract's M6 section.**
+- **The M5 permissions check** asks for each customer tool your store has, so it includes `list_orders` from M6. Its title is the same.
+
 ## 0.5.0 · 2026-11-08
 
 M5, agent-first for real.

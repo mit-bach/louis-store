@@ -15,6 +15,7 @@ OPERATIONS = {
     ("PUT", "/cart/items/{product_id}"): ("cart set", "set_cart_item", 3),
     ("DELETE", "/cart/items/{product_id}"): ("cart remove", "remove_cart_item", 3),
     ("POST", "/checkout"): ("checkout", "checkout", 4),
+    ("GET", "/orders"): ("orders", "list_orders", 6),
 }
 
 EMPTY_CART = "Your cart is empty."
@@ -36,7 +37,8 @@ EXPIRED = "That session has expired. Start a new session."
 UNEXPECTED = "Something went wrong in the store. Try again in a moment."
 
 # Who each tool is for. A customer's agent gets the first list, and is denied the second.
-CUSTOMER_TOOLS = ["list_products", "get_product", "start_session", "get_cart", "set_cart_item", "remove_cart_item", "checkout"]
+CUSTOMER_TOOLS = ["list_products", "get_product", "start_session", "get_cart", "set_cart_item", "remove_cart_item", "checkout",
+                  "list_orders"]
 ADMIN_TOOLS = ["create_product", "archive_product", "update_product", "adjust_stock"]
 
 

@@ -396,3 +396,36 @@ Every tool the store has is in `allow` or in `deny`.
 - **`checks/evals.py`** runs five shopping tasks, each as one headless session of your customer agent, and checks each in the database. `--model` (default `haiku`), `--tasks` and `--runs` change what it runs.
 - **Each run** adds a line to `checks/evals-runs.txt`, which you commit. The line holds the score, the model, a fingerprint of your tool descriptions, and what Claude Code says the run cost.
 
+---
+
+## M6 · The frontend
+
+### Your orders
+
+- **`list_orders(token)`,** in `backend/orders.py`, checks the session, then returns its orders, newest first, each as it was placed: the same `Order` that `checkout` returns, with the prices paid. Another session's orders are never in it.
+
+| Operation | HTTP | Command | Tool |
+|---|---|---|---|
+| `list_orders` | `GET /orders`, with the session's Bearer header | `./store orders --session TOKEN` | `list_orders`, taking `session_token` |
+
+- **HTTP:** `200` and a list of orders; `401` as in M3.
+- **The command line:** the list as JSON, exit 0; exit 5 for no valid session.
+- **The tool:** the list; an error for no valid session. It's a customer tool: your customer agent's settings allow it.
+
+### The door for the browser
+
+A page served from `http://localhost:3000` may call the API from the browser. `backend/main.py` adds FastAPI's `CORSMiddleware` with exactly that origin, every method and every header. A page from anywhere else gets no permission.
+
+### The spec
+
+`FRONTEND-SPEC.md`, at the top of your repository, in your words. It says:
+- each page, and the endpoint each one calls;
+- where the session token lives in the browser, and how it's sent;
+- what a page shows for a `401`, a `409` and a `422`;
+- how checkout uses an `Idempotency-Key`;
+- the walkthrough: what you'll check by hand, and what each check should show.
+
+### The frontend
+
+In `frontend/`, built by your coding agent from the spec: Next.js with the App Router, TypeScript, Tailwind CSS and shadcn/ui, with pnpm. `pnpm lint` and `pnpm build` pass in it, and `pnpm dev` serves it at `http://localhost:3000`.
+
