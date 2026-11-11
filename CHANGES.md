@@ -2,6 +2,12 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.7.0 · 2026-11-11
+
+Optional spec 14, with a guide and checks.
+- **Optional specs have a home:** `optional/`, and `make spec S=<number>` checks one. They're never part of `make check-all`, and no milestone's guide or checks changed.
+- **Spec 14 · Your own migration runner:** `backend/migrate.py`, with a checksum for each applied file and one lock for each run. The guide, the contract's section, and five checks.
+
 ## 0.6.0 · 2026-11-11
 
 M6, the frontend: the last milestone.

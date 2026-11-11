@@ -16,6 +16,8 @@ import httpx
 ROOT = Path(__file__).resolve().parent.parent
 LAST_RUN = ROOT / "checks" / "last-run.txt"
 MILESTONES = {0: "Setup", 1: "Products, and the store's first tools", 2: "The admin side, and your first race", 3: "Visitors and carts", 4: "Checkout, and two buyers at once", 5: "Agent-first, for real: retries, errors, scope and evals", 6: "The frontend, built by your agent"}
+# Optional specs: run one with `make spec S=<number>`. They're never part of `make check-all`.
+SPECS = {14: "Your own migration runner"}
 
 
 class Fail(Exception):
@@ -170,3 +172,20 @@ def http_json(ctx, method: str, path: str, **kw):
     except ValueError:
         body = r.text
     return r.status_code, body
+
+
+def ready(ctx) -> None:
+    """For an optional spec's checks: the throwaway store started, with your migrations and your seed applied."""
+    if ctx.notes_cache.get("ready"):
+        return
+    ctx.start()
+    for f in sorted((ROOT / "backend" / "migrations").glob("*.sql")):
+        r = ctx.psql(f.read_text(), single_transaction=True)
+        if r.returncode != 0:
+            raise Fail(f"{f.name} applies to an empty database", short(r.stderr))
+    seed = ROOT / "backend" / "seed.sql"
+    if seed.exists():
+        r = ctx.psql(seed.read_text(), single_transaction=True)
+        if r.returncode != 0:
+            raise Fail("backend/seed.sql applies", short(r.stderr))
+    ctx.notes_cache["ready"] = True

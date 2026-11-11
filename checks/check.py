@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = ["httpx==0.28.1", "mcp==2.3.0"]
 # ///
-"""The store's checks. Run them with `make check M=<milestone> [STEP=<step>]`.
+"""The store's checks. Run them with `make check M=<milestone> [STEP=<step>]`, or an optional spec's with `make spec S=<number>`.
 
 Each run starts a second, throwaway copy of your store (its own containers, its own empty
 database, on port 8001), applies your migrations and your seed to it, runs the checks against
@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from kitlib import CHECKS, LAST_RUN, MILESTONES, Ctx, Fail, git, short  # noqa: E402
+from kitlib import CHECKS, LAST_RUN, MILESTONES, SPECS, Ctx, Fail, git, short  # noqa: E402
 
 def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, int, int, list[str]]:
     import m0  # noqa: F401  (registers the checks)
@@ -30,21 +30,26 @@ def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, i
     import m4  # noqa: F401
     import m5  # noqa: F401
     import m6  # noqa: F401
+    import s14  # noqa: F401  (optional specs: never chosen for a milestone, only by make spec)
 
-    chosen = [
-        c for c in CHECKS
-        if c.milestone < target_m or (c.milestone == target_m and (target_step is None or c.step <= target_step))
-    ]
+    if target_m in SPECS:
+        chosen = [c for c in CHECKS if c.milestone == target_m]
+    else:
+        chosen = [
+            c for c in CHECKS
+            if c.milestone < target_m or (c.milestone == target_m and (target_step is None or c.step <= target_step))
+        ]
     out: list[str] = []
     passed = failed = skipped = 0
     current = None
     for c in chosen:
         if c.milestone != current:
             current = c.milestone
-            line = f"\nM{c.milestone} · {MILESTONES[c.milestone]}"
+            line = (f"\nOptional spec {c.milestone} · {SPECS[c.milestone]}" if c.milestone in SPECS
+                    else f"\nM{c.milestone} · {MILESTONES[c.milestone]}")
             print(line, flush=True)
             out.append(line)
-        label = f"M{c.milestone}-{c.step}"
+        label = f"{'S' if c.milestone in SPECS else 'M'}{c.milestone}-{c.step}"
         missing = [n for n in c.needs if n not in ctx.proven]
         if missing:
             line = f"  SKIP  {label}  {c.title}  (needs: {', '.join(missing)})"
@@ -76,12 +81,18 @@ def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, i
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the store's checks.")
-    parser.add_argument("milestone", help="the milestone number, or 'all'")
+    parser.add_argument("milestone", help="the milestone number, 'all', or s<number> for an optional spec")
     parser.add_argument("step", nargs="?", type=int, help="stop after this step of the milestone")
     parser.add_argument("--keep", action="store_true", help="leave the throwaway store running afterwards")
     a = parser.parse_args()
-    target_m = max(MILESTONES) if a.milestone == "all" else int(a.milestone)
-    if target_m not in MILESTONES:
+    if a.milestone.startswith("s"):
+        target_m = int(a.milestone[1:])
+        if target_m not in SPECS:
+            print(f"There's no optional spec {target_m} with checks. The kit has checks for these optional specs: {', '.join(map(str, SPECS))}.")
+            return 2
+    else:
+        target_m = max(MILESTONES) if a.milestone == "all" else int(a.milestone)
+    if target_m not in MILESTONES and target_m not in SPECS:
         print(f"There's no milestone {target_m} yet. The kit has milestones {min(MILESTONES)} to {max(MILESTONES)}.")
         return 2
     ctx = Ctx(
@@ -90,7 +101,7 @@ def main() -> int:
         keep=a.keep,
     )
     started_at = datetime.now().astimezone()
-    scope = f"M{target_m}" + (f" up to step {a.step}" if a.step else "")
+    scope = f"optional spec {target_m}" if target_m in SPECS else f"M{target_m}" + (f" up to step {a.step}" if a.step else "")
     head = f"Store checks · {scope} · {started_at:%Y-%m-%d %H:%M %Z}"
     print(head, flush=True)
     try:

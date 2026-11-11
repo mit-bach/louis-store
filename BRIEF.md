@@ -38,7 +38,7 @@ Each milestone is a folder of step files in [`milestones/`](milestones/README.md
 - **M5 · Agent-first, for real: retries, errors, scope and evals** (about two days). Ready now.
 - **M6 · The frontend, built by your agent** (about two days). Ready now.
 
-Every milestone is in this repository now. Later fixes reach you with `make update`.
+Every milestone is in this repository now. Later fixes reach you with `make update`. Optional specs, for after the course or alongside it, are in [`optional/`](optional/README.md).
 
 ## What "finished" means
 

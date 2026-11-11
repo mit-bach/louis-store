@@ -429,3 +429,24 @@ A page served from `http://localhost:3000` may call the API from the browser. `b
 
 In `frontend/`, built by your coding agent from the spec: Next.js with the App Router, TypeScript, Tailwind CSS and shadcn/ui, with pnpm. `pnpm lint` and `pnpm build` pass in it, and `pnpm dev` serves it at `http://localhost:3000`.
 
+---
+
+## Optional spec 14 · Your own migration runner
+
+`backend/migrate.py`, run inside the API container:
+
+```
+docker compose exec api python migrate.py              the files in backend/migrations/
+docker compose exec api python migrate.py <folder>     the files in another folder
+```
+
+- **It connects** with the `DATABASE_URL` the container already has.
+- **It records** what's applied in `schema_migrations`, the table `make migrate` keeps, with a column added: `checksum`, the SHA-256 of the file's bytes, in hex.
+- **One run at a time:** it takes a Postgres advisory lock for the whole run, so a second run waits, then finds everything applied.
+- **Before it applies anything,** it compares every applied file that has a checksum with the file as it is now. If one differs, it changes nothing, prints this on stderr, and exits 4:
+  `<file name> was edited after it was applied. Put it back as it was, and write a new migration for the change.`
+- **A row without a checksum** was applied by `make migrate`. It records the file's checksum, without running the file again, and prints `checksum recorded for <file name>`.
+- **Each new file,** in file-name order, is applied in a transaction of its own, together with its row. It prints `applying <file name>` for each.
+- **At the end** it prints `migrations up to date`, and exits 0.
+
+`make spec S=14` checks it.

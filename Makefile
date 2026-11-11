@@ -3,7 +3,7 @@
 
 PSQL = docker compose exec -T db psql -X -q -v ON_ERROR_STOP=1 -U store -d store
 
-.PHONY: help up down logs psql migrate reset check check-all update
+.PHONY: help up down logs psql migrate reset check check-all spec update
 
 help:
 	@echo "make up                  start your store (API and database), rebuilding the API if needed"
@@ -14,6 +14,7 @@ help:
 	@echo "make reset               empty your database, then apply every migration and the seed"
 	@echo "make check M=1 [STEP=3]  run the checks for a milestone, on a throwaway copy of your store"
 	@echo "make check-all           run every milestone's checks"
+	@echo "make spec S=14           run an optional spec's checks (optional/README.md)"
 	@echo "make update              take the kit's new guides and fixes (git pull from the remote called kit)"
 
 up:
@@ -53,6 +54,11 @@ check:
 check-all:
 	@command -v uv >/dev/null || { echo "uv isn't installed: see milestones/M0/1-tools-and-your-repo.md"; exit 1; }
 	@uv run --quiet checks/check.py all
+
+spec:
+	@command -v uv >/dev/null || { echo "uv isn't installed: see milestones/M0/1-tools-and-your-repo.md"; exit 1; }
+	@if [ -z "$(S)" ]; then echo "Say which optional spec: make spec S=14"; exit 2; fi
+	@uv run --quiet checks/check.py s$(S)
 
 update:
 	git pull --no-rebase --no-edit kit main

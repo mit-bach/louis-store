@@ -59,7 +59,7 @@ The kit's milestones, about 13 working days in all:
   - Step 3 is the first time his coding agent writes code for him: on a branch, in plan mode, with a plan he checks against his spec before he approves it. His `AGENTS.md` gains a section on what it builds.
   - Step 4 is the walkthrough by hand, and one change he makes to the agent's code himself. Step 5 is the same request with no spec, judged on the same walkthrough.
 
-All six milestones are in the kit now.
+All six milestones are in the kit now. The kit's `optional/` folder holds guides, with checks (`make spec S=<number>`), for some of his optional specs. Serve one like a milestone's step when he picks it.
 
 ## 6. Course files
 
