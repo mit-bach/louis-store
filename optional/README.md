@@ -7,6 +7,7 @@ Most of them are yours to design: the list says what, and you decide how. Some c
 | Spec | Guide | Do it after |
 |---|---|---|
 | 14 · Your own migration runner | [14-your-own-migration-runner.md](14-your-own-migration-runner.md) | M2, when `make migrate` arrives |
+| 15 · Errors the browser can read | [15-errors-the-browser-can-read.md](15-errors-the-browser-can-read.md) | M6 |
 
 Check one with:
 

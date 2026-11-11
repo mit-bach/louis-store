@@ -2,6 +2,11 @@
 
 Each version of the kit, newest first. `make update` brings you the newest.
 
+## 0.8.0 · 2026-11-11
+
+Optional spec 15, with a guide and checks.
+- **Spec 15 · Errors the browser can read:** your catch-all for unexpected errors moves inside the CORS layer, as a middleware, so a `500` reaches your pages as its one-line message. The guide, the contract's section, and three checks. `make check M=6` passes before and after.
+
 ## 0.7.0 · 2026-11-11
 
 Optional spec 14, with a guide and checks.

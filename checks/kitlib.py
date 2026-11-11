@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LAST_RUN = ROOT / "checks" / "last-run.txt"
 MILESTONES = {0: "Setup", 1: "Products, and the store's first tools", 2: "The admin side, and your first race", 3: "Visitors and carts", 4: "Checkout, and two buyers at once", 5: "Agent-first, for real: retries, errors, scope and evals", 6: "The frontend, built by your agent"}
 # Optional specs: run one with `make spec S=<number>`. They're never part of `make check-all`.
-SPECS = {14: "Your own migration runner"}
+SPECS = {14: "Your own migration runner", 15: "Errors the browser can read"}
 
 
 class Fail(Exception):

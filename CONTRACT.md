@@ -450,3 +450,10 @@ docker compose exec api python migrate.py <folder>     the files in another fold
 - **At the end** it prints `migrations up to date`, and exits 0.
 
 `make spec S=14` checks it.
+
+## Optional spec 15 · Errors the browser can read
+
+A `500` reaches a page from `http://localhost:3000` with the CORS header, so the page can read its message: `{"detail": "Something went wrong in the store. Try again in a moment."}`. A page from anywhere else still gets no CORS header. The traceback still reaches the API's log. `./store` and the tools answer exactly as in M5.
+
+`make spec S=15` checks it.
+

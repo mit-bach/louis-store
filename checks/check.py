@@ -31,6 +31,7 @@ def run_checks(target_m: int, target_step: int | None, ctx: Ctx) -> tuple[int, i
     import m5  # noqa: F401
     import m6  # noqa: F401
     import s14  # noqa: F401  (optional specs: never chosen for a milestone, only by make spec)
+    import s15  # noqa: F401
 
     if target_m in SPECS:
         chosen = [c for c in CHECKS if c.milestone == target_m]
